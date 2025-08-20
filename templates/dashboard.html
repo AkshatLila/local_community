@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Community Portal{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="card">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; color: var(--dark-slate);">Welcome back, {{ user.name }}!</h2>
+                <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Apartment {{ user.apartment }}</p>
+            </div>
+            <div style="text-align: right; color: var(--light-gray);">
+                <p style="margin: 0; font-size: 0.875rem;">{{ format_datetime(now) }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; color: var(--primary-blue); font-size: 2rem;">{{ notices|length }}</h3>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Recent Notices</p>
+                </div>
+                <div style="color: var(--primary-blue);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; color: var(--success-green); font-size: 2rem;">{{ requests|length }}</h3>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Your Requests</p>
+                </div>
+                <div style="color: var(--success-green);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; color: var(--info-blue); font-size: 2rem;">{{ messages|length }}</h3>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Recent Messages</p>
+                </div>
+                <div style="color: var(--info-blue);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; color: var(--warning-orange); font-size: 2rem;">24/7</h3>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Support Available</p>
+                </div>
+                <div style="color: var(--warning-orange);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Quick Actions</h3>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="{{ url_for('notices') }}" class="btn btn-outline" style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>View Notices</span>
+            </a>
+            <a href="{{ url_for('service_requests') }}" class="btn btn-outline" style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem;">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                <span>Service Request</span>
+            </a>
+            <a href="{{ url_for('chat') }}" class="btn btn-outline" style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem;">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Community Chat</span>
+            </a>
+            <a href="{{ url_for('profile') }}" class="btn btn-outline" style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem;">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Profile Settings</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+    <!-- Recent Notices -->
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="card-title">Recent Notices</h3>
+            <a href="{{ url_for('notices') }}" class="btn btn-sm btn-outline">View All</a>
+        </div>
+        <div class="card-body">
+            {% if notices %}
+                {% for notice in notices %}
+                    <div style="padding: 1rem; border: 1px solid var(--border-gray); border-radius: var(--border-radius); margin-bottom: 1rem; background-color: #fafbfc;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--dark-slate);">{{ notice.title }}</h4>
+                                <p style="margin: 0 0 0.5rem 0; color: var(--light-gray); font-size: 0.875rem;">
+                                    {{ notice.content[:100] }}{% if notice.content|length > 100 %}...{% endif %}
+                                </p>
+                                <small style="color: var(--light-gray);">
+                                    {{ format_datetime(notice.created_at) }}
+                                </small>
+                            </div>
+                            <span class="badge badge-{{ 'danger' if notice.priority == 'urgent' else 'warning' if notice.priority == 'high' else 'info' if notice.priority == 'medium' else 'success' }}">
+                                {{ notice.priority|title }}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: var(--light-gray); padding: 2rem;">No recent notices</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Your Service Requests -->
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="card-title">Your Service Requests</h3>
+            <a href="{{ url_for('service_requests') }}" class="btn btn-sm btn-outline">View All</a>
+        </div>
+        <div class="card-body">
+            {% if requests %}
+                {% for request in requests %}
+                    <div style="padding: 1rem; border: 1px solid var(--border-gray); border-radius: var(--border-radius); margin-bottom: 1rem; background-color: #fafbfc;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--dark-slate);">{{ request.title }}</h4>
+                                <p style="margin: 0 0 0.5rem 0; color: var(--light-gray); font-size: 0.875rem;">
+                                    {{ request.description[:100] }}{% if request.description|length > 100 %}...{% endif %}
+                                </p>
+                                <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                                    <small style="color: var(--light-gray);">{{ request.category|title }}</small>
+                                    <small style="color: var(--light-gray);">
+                                        {{ format_datetime(request.created_at) }}
+                                    </small>
+                                </div>
+                            </div>
+                            <span class="status-indicator status-{{ 'pending' if request.status == 'pending' else 'in-progress' if request.status == 'in_progress' else 'resolved' }}">
+                                {{ request.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: var(--light-gray); padding: 2rem;">No service requests yet</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Chat Messages -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 class="card-title">Recent Community Messages</h3>
+        <a href="{{ url_for('chat') }}" class="btn btn-sm btn-outline">Join Chat</a>
+    </div>
+    <div class="card-body">
+        {% if messages %}
+            <div style="max-height: 300px; overflow-y: auto;">
+                {% for message in messages[:3] %}
+                    <div style="padding: 1rem; border: 1px solid var(--border-gray); border-radius: var(--border-radius); margin-bottom: 1rem; background-color: #fafbfc;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                    <strong style="margin-right: 1rem; color: var(--dark-slate);">{{ message.user_name }}</strong>
+                                    <small style="color: var(--light-gray);">
+                                        {{ format_datetime(message.created_at) }}
+                                    </small>
+                                </div>
+                                <p style="margin: 0; color: var(--dark-slate);">{{ message.content[:150] }}{% if message.content|length > 150 %}...{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="text-align: center; color: var(--light-gray); padding: 2rem;">No recent messages</p>
+        {% endif %}
+        {% if messages|length > 3 %}
+            <div style="text-align: center; margin-top: 1rem;">
+                <small style="color: var(--light-gray);">Showing 3 of {{ messages|length }} messages</small>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.notice-item, .request-item, .message-item {
+    transition: transform 0.2s ease;
+}
+
+.notice-item:hover, .request-item:hover, .message-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.btn {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.chat-preview {
+    max-height: 300px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %} 

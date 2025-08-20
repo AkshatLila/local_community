@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Service Requests - Community Portal{% endblock %}
+{% block header_title %}Service Requests{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="card">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; color: var(--dark-slate);">Service Requests</h2>
+                <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Submit and track maintenance requests</p>
+            </div>
+            <button class="btn btn-primary" onclick="openNewRequestModal()">
+                New Request
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Request Statistics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h3 style="margin: 0; color: var(--warning-orange); font-size: 2rem;">{{ requests|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+            <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Pending</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h3 style="margin: 0; color: var(--info-blue); font-size: 2rem;">{{ requests|selectattr('status', 'equalto', 'in_progress')|list|length }}</h3>
+            <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">In Progress</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h3 style="margin: 0; color: var(--success-green); font-size: 2rem;">{{ requests|selectattr('status', 'equalto', 'resolved')|list|length }}</h3>
+            <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Resolved</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h3 style="margin: 0; color: var(--dark-slate); font-size: 2rem;">{{ requests|length }}</h3>
+            <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Total</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Options -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Filter Requests</h3>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="form-group">
+                <label for="statusFilter" class="form-label">Status</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="categoryFilter" class="form-label">Category</label>
+                <select class="form-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="plumbing">Plumbing</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="carpentry">Carpentry</option>
+                    <option value="cleaning">Cleaning</option>
+                    <option value="security">Security</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="priorityFilter" class="form-label">Priority</label>
+                <select class="form-select" id="priorityFilter">
+                    <option value="">All Priorities</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: flex; align-items: end;">
+                <button class="btn btn-outline" onclick="clearFilters()" style="width: 100%;">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Requests List -->
+{% if requests %}
+    {% for request in requests %}
+        <div class="card request-card" 
+             data-status="{{ request.status }}" 
+             data-category="{{ request.category }}" 
+             data-priority="{{ request.priority }}">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 0.5rem 0; color: var(--dark-slate);">{{ request.title }}</h3>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <span class="status-indicator status-{{ 'pending' if request.status == 'pending' else 'in-progress' if request.status == 'in_progress' else 'resolved' }}">
+                                {{ request.status|replace('_', ' ')|title }}
+                            </span>
+                            <span class="badge badge-{{ 'danger' if request.priority == 'urgent' else 'warning' if request.priority == 'high' else 'info' if request.priority == 'medium' else 'success' }}">
+                                {{ request.priority|title }}
+                            </span>
+                        </div>
+                        <small style="color: var(--light-gray);">
+                            {{ format_datetime(request.created_at) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 1.5rem;">
+                    <div>
+                        <p style="margin: 0 0 1rem 0; color: var(--dark-slate); line-height: 1.6;">{{ request.description }}</p>
+                        <div style="display: flex; gap: 1rem; color: var(--light-gray); font-size: 0.875rem;">
+                            <span>{{ request.category|title }}</span>
+                            <span>{{ request.apartment }}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        {% if request.status == 'pending' %}
+                            <div class="alert alert-warning" style="margin: 0; padding: 0.75rem;">
+                                Awaiting assignment
+                            </div>
+                        {% elif request.status == 'in_progress' %}
+                            <div class="alert alert-info" style="margin: 0; padding: 0.75rem;">
+                                Work in progress
+                            </div>
+                        {% elif request.status == 'resolved' %}
+                            <div class="alert alert-success" style="margin: 0; padding: 0.75rem;">
+                                Completed
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 3rem;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--light-gray); margin-bottom: 1rem;">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+            <h4 style="color: var(--light-gray); margin: 0 0 0.5rem 0;">No service requests yet</h4>
+            <p style="color: var(--light-gray); margin: 0 0 1.5rem 0;">Submit your first maintenance request to get started.</p>
+            <button class="btn btn-primary" onclick="openNewRequestModal()">
+                Submit Request
+            </button>
+        </div>
+    </div>
+{% endif %}
+
+<!-- New Request Modal -->
+<div id="newRequestModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background-color: white; margin: 5% auto; padding: 0; border-radius: var(--border-radius); width: 90%; max-width: 600px; box-shadow: var(--box-shadow);">
+        <div class="modal-header">
+            <h3 style="margin: 0; color: var(--dark-slate);">New Service Request</h3>
+            <button onclick="closeNewRequestModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--light-gray);">&times;</button>
+        </div>
+        <form method="POST">
+            <div class="modal-body" style="padding: 1.5rem;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label for="title" class="form-label">Request Title</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               placeholder="e.g., Water leakage in bathroom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="carpentry">Carpentry</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="security">Security</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" 
+                              placeholder="Please describe the issue in detail..." required></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select class="form-select" id="priority" name="priority" required>
+                            <option value="">Select Priority</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Apartment</label>
+                        <input type="text" class="form-control" value="{{ current_user.apartment }}" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-gray); display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-outline" onclick="closeNewRequestModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priorityFilter = document.getElementById('priorityFilter');
+    const requestCards = document.querySelectorAll('.request-card');
+    
+    function applyFilters() {
+        const selectedStatus = statusFilter.value;
+        const selectedCategory = categoryFilter.value;
+        const selectedPriority = priorityFilter.value;
+        
+        requestCards.forEach(card => {
+            const status = card.dataset.status;
+            const category = card.dataset.category;
+            const priority = card.dataset.priority;
+            
+            const statusMatch = !selectedStatus || status === selectedStatus;
+            const categoryMatch = !selectedCategory || category === selectedCategory;
+            const priorityMatch = !selectedPriority || priority === selectedPriority;
+            
+            if (statusMatch && categoryMatch && priorityMatch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    statusFilter.addEventListener('change', applyFilters);
+    categoryFilter.addEventListener('change', applyFilters);
+    priorityFilter.addEventListener('change', applyFilters);
+});
+
+function clearFilters() {
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('categoryFilter').value = '';
+    document.getElementById('priorityFilter').value = '';
+    
+    document.querySelectorAll('.request-card').forEach(card => {
+        card.style.display = 'block';
+    });
+}
+
+function openNewRequestModal() {
+    document.getElementById('newRequestModal').style.display = 'block';
+}
+
+function closeNewRequestModal() {
+    document.getElementById('newRequestModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('newRequestModal');
+    if (event.target === modal) {
+        closeNewRequestModal();
+    }
+}
+</script>
+{% endblock %} 

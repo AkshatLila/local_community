@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Notices - Community Portal{% endblock %}
+{% block header_title %}Community Notices{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="card">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; color: var(--dark-slate);">Community Notices</h2>
+                <p style="margin: 0.5rem 0 0 0; color: var(--light-gray);">Stay updated with community announcements</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Priority Filter -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Filter by Priority</h3>
+    </div>
+    <div class="card-body">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <input type="radio" id="all" name="priority-filter" value="all" checked style="display: none;">
+            <label for="all" class="btn btn-outline" style="cursor: pointer; margin: 0;">All</label>
+            
+            <input type="radio" id="urgent" name="priority-filter" value="urgent" style="display: none;">
+            <label for="urgent" class="btn btn-outline" style="cursor: pointer; margin: 0; border-color: var(--danger-red); color: var(--danger-red);">
+                Urgent
+            </label>
+            
+            <input type="radio" id="high" name="priority-filter" value="high" style="display: none;">
+            <label for="high" class="btn btn-outline" style="cursor: pointer; margin: 0; border-color: var(--warning-orange); color: var(--warning-orange);">
+                High
+            </label>
+            
+            <input type="radio" id="medium" name="priority-filter" value="medium" style="display: none;">
+            <label for="medium" class="btn btn-outline" style="cursor: pointer; margin: 0; border-color: var(--info-blue); color: var(--info-blue);">
+                Medium
+            </label>
+            
+            <input type="radio" id="low" name="priority-filter" value="low" style="display: none;">
+            <label for="low" class="btn btn-outline" style="cursor: pointer; margin: 0; border-color: var(--success-green); color: var(--success-green);">
+                Low
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Notices List -->
+{% if notices %}
+    {% for notice in notices %}
+        <div class="card notice-card" data-priority="{{ notice.priority }}">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 0.5rem 0; color: var(--dark-slate);">{{ notice.title }}</h3>
+                        <small style="color: var(--light-gray);">
+                            {{ format_datetime(notice.created_at) }}
+                        </small>
+                    </div>
+                    <span class="badge badge-{{ 'danger' if notice.priority == 'urgent' else 'warning' if notice.priority == 'high' else 'info' if notice.priority == 'medium' else 'success' }}">
+                        {{ notice.priority|title }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="line-height: 1.6; color: var(--dark-slate);">
+                    {{ notice.content|nl2br|safe }}
+                </div>
+                
+                {% if notice.priority == 'urgent' %}
+                    <div class="alert alert-danger" style="margin-top: 1rem; margin-bottom: 0;">
+                        <strong>Urgent Notice:</strong> This requires immediate attention from all residents.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 3rem;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--light-gray); margin-bottom: 1rem;">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <h4 style="color: var(--light-gray); margin: 0 0 0.5rem 0;">No notices available</h4>
+            <p style="color: var(--light-gray); margin: 0;">Check back later for community updates and announcements.</p>
+        </div>
+    </div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Priority filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('input[name="priority-filter"]');
+    const noticeCards = document.querySelectorAll('.notice-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('change', function() {
+            const selectedPriority = this.value;
+            
+            noticeCards.forEach(card => {
+                if (selectedPriority === 'all' || card.dataset.priority === selectedPriority) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 
